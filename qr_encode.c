@@ -14,6 +14,9 @@ static PyObject *qr_encode(PyObject *self, PyObject *args)
         return NULL;
     
     code = QRcode_encodeString(str, version, level, hint, case_sensitive);
+    if (!code) {
+        return Py_BuildValue("");
+    }
     
     num_pixels = code->width * code->width;
     for(i = 0; i < num_pixels; i++)
