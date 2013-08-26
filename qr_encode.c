@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <qrencode.h>
 
-static PyObject *qr_encode(PyObject *self, PyObject *args)
+static PyObject *encode(PyObject *self, PyObject *args)
 {
     char *str;
     int i, version, level, hint, case_sensitive, num_pixels;
@@ -25,16 +25,16 @@ static PyObject *qr_encode(PyObject *self, PyObject *args)
     return ret;
 };
 
-static PyMethodDef qr_encode_methods[] =
+static PyMethodDef qrencode_methods[] =
 {
-    {"encode", qr_encode, METH_VARARGS, "Encodes a string as a QR-code. Returns a tuple of (version, width, data)"},
+    {"encode", encode, METH_VARARGS, "Encodes a string as a QR-code. Returns a tuple of (version, width, data)"},
     {NULL, NULL, 0, NULL}
 };
 
 PyMODINIT_FUNC
-initqr_encode(void)
+init_qrencode(void)
 {
-    PyObject *m = Py_InitModule("qr_encode", qr_encode_methods);
+    PyObject *m = Py_InitModule("qrencode._qrencode", qrencode_methods);
     if(m == NULL)
       return;
 }

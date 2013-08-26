@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-encode = Extension('qr_encode', sources=['qr_encode.c'], libraries=['qrencode'])
+encode = Extension('qrencode._qrencode', sources=['qr_encode.c'], libraries=['qrencode'])
 
 setup(name='qrencode',
       version='1.0',

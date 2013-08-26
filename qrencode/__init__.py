@@ -1,4 +1,4 @@
-from qr_encode import encode as _encode
+from ._qrencode import encode as _encode
 import Image
 
 
