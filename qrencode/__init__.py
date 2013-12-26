@@ -1,6 +1,10 @@
-from qr_encode import encode as _encode
-import Image
+import sys
+from ._qrencode import encode as _encode
+from PIL import Image
 
+if sys.version_info >= (3,):
+    unicode = str
+    basestring = (str, bytes)
 
 QR_ECLEVEL_L = 0
 QR_ECLEVEL_M = 1

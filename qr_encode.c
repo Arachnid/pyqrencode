@@ -2,39 +2,63 @@
 #include <stdlib.h>
 #include <qrencode.h>
 
-static PyObject *qr_encode(PyObject *self, PyObject *args)
+#if PY_MAJOR_VERSION >= 3
+#  define BYTES "y"
+#else
+#  define BYTES "s"
+#endif
+
+static PyObject *encode(PyObject *self, PyObject *args)
 {
     char *str;
     int i, version, level, hint, case_sensitive, num_pixels;
     QRcode *code;
     PyObject *ret;
     
-    if(!PyArg_ParseTuple(args, "siiii", &str, &version, &level, &hint,
-                         &case_sensitive))
+    if(!PyArg_ParseTuple(args, BYTES "iiii:_qrencode.encode",
+                         &str, &version, &level, &hint, &case_sensitive))
         return NULL;
-    
+
     code = QRcode_encodeString(str, version, level, hint, case_sensitive);
     
     num_pixels = code->width * code->width;
     for(i = 0; i < num_pixels; i++)
       code->data[i] = 255 - (code->data[i] & 0x1) * 0xFF;
     
-    ret = Py_BuildValue("(iis#)", code->version, code->width,
+    ret = Py_BuildValue("(ii" BYTES "#)", code->version, code->width,
                         code->data, num_pixels);
     QRcode_free(code);
     return ret;
 };
 
-static PyMethodDef qr_encode_methods[] =
+static PyMethodDef methods[] =
 {
-    {"encode", qr_encode, METH_VARARGS, "Encodes a string as a QR-code. Returns a tuple of (version, width, data)"},
+    {"encode", encode, METH_VARARGS, "Encodes a string as a QR-code. Returns a tuple of (version, width, data)"},
     {NULL, NULL, 0, NULL}
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+static PyModuleDef module = {
+    PyModuleDef_HEAD_INIT,
+    "qrencode._qrencode",
+    NULL,
+    -1,
+    methods,
+};
+
 PyMODINIT_FUNC
-initqr_encode(void)
+PyInit__qrencode(void)
 {
-    PyObject *m = Py_InitModule("qr_encode", qr_encode_methods);
-    if(m == NULL)
-      return;
+    return PyModule_Create(&module);
 }
+
+#else
+
+PyMODINIT_FUNC
+init_qrencode(void)
+{
+    Py_InitModule("qrencode._qrencode", methods);
+}
+
+#endif
