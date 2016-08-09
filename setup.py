@@ -3,7 +3,7 @@ from distutils.core import setup, Extension
 encode = Extension('qrencode._qrencode', sources=['qr_encode.c'], libraries=['qrencode'])
 
 setup(name='qrencode',
-      version='1.0',
+      version='1.2',
       description='Encodes QR-codes.',
       author='Nick Johnson',
       author_email='arachnid@notdot.net',
@@ -12,3 +12,4 @@ setup(name='qrencode',
       packages=['qrencode'],
       ext_modules=[encode],
       requires=['PIL'])
+
