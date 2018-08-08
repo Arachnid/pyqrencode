@@ -1,6 +1,6 @@
 import sys
-from . import _qrencode
 from PIL import Image
+from . import _qrencode
 
 if sys.version_info >= (3,):
     unicode = str
@@ -21,7 +21,7 @@ hints = [QR_MODE_8, QR_MODE_KANJI]
 def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
            case_sensitive=True):
     """Creates a QR-Code from string data.
-    
+
     Args:
       data: string: The data to encode in a QR-code. If a unicode string is
           supplied, it will be encoded in UTF-8.
@@ -52,9 +52,10 @@ def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
     if not output:
         raise ValueError('Error generating QR-Code.')
     version, size, data = output
-    
+
     im = Image.frombytes('L', (size, size), data)
     return (version, size, im)
+
 
 def encode_scaled(data, size, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
                   case_sensitive=True):
@@ -77,11 +78,11 @@ def encode_scaled(data, size, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
     """
     version, src_size, im = encode(data, version, level, hint, case_sensitive)
     if size < src_size:
-      size = src_size
+        size = src_size
     qr_size = (size / src_size) * src_size
     im = im.resize((qr_size, qr_size), Image.NEAREST)
     pad = (size - qr_size) / 2
     ret = Image.new("L", (size, size), 255)
     ret.paste(im, (pad, pad))
-    
+
     return (version, size, ret)

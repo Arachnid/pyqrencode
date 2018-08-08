@@ -14,7 +14,7 @@ static PyObject *encode(PyObject *self, PyObject *args)
     int i, version, level, hint, case_sensitive, num_pixels;
     QRcode *code;
     PyObject *ret;
-    
+
     if(!PyArg_ParseTuple(args, BYTES "iiii:_qrencode.encode",
                          &str, &version, &level, &hint, &case_sensitive))
         return NULL;
@@ -23,11 +23,11 @@ static PyObject *encode(PyObject *self, PyObject *args)
     if (!code) {
         return Py_BuildValue("");
     }
-    
+
     num_pixels = code->width * code->width;
     for(i = 0; i < num_pixels; i++)
       code->data[i] = 255 - (code->data[i] & 0x1) * 0xFF;
-    
+
     ret = Py_BuildValue("(ii" BYTES "#)", code->version, code->width,
                         code->data, num_pixels);
     QRcode_free(code);
@@ -40,7 +40,7 @@ static PyObject *encode_bytes(PyObject *self, PyObject *args)
     int size, i, version, level, num_pixels;
     QRcode *code;
     PyObject *ret;
-    
+
     if(!PyArg_ParseTuple(args, BYTES "#ii:_qrencode.encode",
                          &str, &size, &version, &level))
         return NULL;
@@ -49,11 +49,11 @@ static PyObject *encode_bytes(PyObject *self, PyObject *args)
     if (!code) {
         return Py_BuildValue("");
     }
-    
+
     num_pixels = code->width * code->width;
     for(i = 0; i < num_pixels; i++)
       code->data[i] = 255 - (code->data[i] & 0x1) * 0xFF;
-    
+
     ret = Py_BuildValue("(ii" BYTES "#)", code->version, code->width,
                         code->data, num_pixels);
     QRcode_free(code);
