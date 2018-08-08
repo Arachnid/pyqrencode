@@ -16,6 +16,11 @@ def test_encode_string(value):
     assert qrencode.encode(value)
 
 
+@ht.given(st.binary(min_size=1))
+def test_encode_bytes(value):
+    assert qrencode.encode(value)
+
+
 @ht.given(falsy_values)
 def test_encode_invalid_data(value):
     with pytest.raises(ValueError):
