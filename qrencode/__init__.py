@@ -1,5 +1,5 @@
 import sys
-from ._qrencode import encode as _encode
+from . import _qrencode
 from PIL import Image
 
 if sys.version_info >= (3,):
@@ -45,7 +45,10 @@ def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
         raise ValueError('Invalid error-correction level.')
     if hint not in hints:
         raise ValueError('Invalid encoding mode.')
-    output = _encode(data, version, level, hint, case_sensitive)
+    try:
+        output = _qrencode.encode(data, version, level, hint, case_sensitive)
+    except (ValueError, TypeError):
+        output = _qrencode.encode_bytes(data, version, level)
     if not output:
         raise ValueError('Error generating QR-Code.')
     version, size, data = output
