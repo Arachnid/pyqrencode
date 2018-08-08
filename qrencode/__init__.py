@@ -24,7 +24,7 @@ def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
 
     Args:
       data: string: The data to encode in a QR-code. If a unicode string is
-          supplied, it will be encoded in UTF-8.
+          supplied, it will be encoded in UTF-8. Raw bytes are also supported.
       version: int: The minimum version to use. If set to 0, the library picks
           the smallest version that the data fits in.
       level: int: Error correction level. Defaults to 'L'.
@@ -37,7 +37,7 @@ def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
     if isinstance(data, unicode):
         data = data.encode('utf8')
     elif not isinstance(data, basestring):
-        raise ValueError('data argument must be a string.')
+        raise ValueError('data argument must be a string or bytes.')
     if not data:
         raise ValueError('data argument cannot be empty.')
     version = int(version)
@@ -63,7 +63,7 @@ def encode_scaled(data, size, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
 
     Args:
       data: string: The data to encode in a QR-code. If a unicode string is
-          supplied, it will be encoded in UTF-8.
+          supplied, it will be encoded in UTF-8. Raw bytes are also supported.
       size: int: Output size. If this is not an exact multiple of the QR-code's
           dimensions, padding will be added. If this is smaller than the
           QR-code's dimensions, it is ignored.
