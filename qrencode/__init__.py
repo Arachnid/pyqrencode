@@ -38,15 +38,17 @@ def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
         data = data.encode('utf8')
     elif not isinstance(data, basestring):
         raise ValueError('data argument must be a string.')
+    if not data:
+        raise ValueError('data argument cannot be empty.')
     version = int(version)
     if level not in levels:
         raise ValueError('Invalid error-correction level.')
     if hint not in hints:
         raise ValueError('Invalid encoding mode.')
-    if case_sensitive:
-        version, size, data = _encode(data, version, level, hint, True)
-    else:
-        version, size, data = _encode(data, version, level, hint, False)
+    output = _encode(data, version, level, hint, case_sensitive)
+    if not output:
+        raise ValueError('Error generating QR-Code.')
+    version, size, data = output
     
     im = Image.frombytes('L', (size, size), data)
     return (version, size, im)
