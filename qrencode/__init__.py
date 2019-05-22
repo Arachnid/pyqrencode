@@ -1,6 +1,6 @@
 import sys
-from ._qrencode import encode as _encode
 from PIL import Image
+from . import _qrencode
 
 if sys.version_info >= (3,):
     unicode = str
@@ -21,10 +21,10 @@ hints = [QR_MODE_8, QR_MODE_KANJI]
 def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
            case_sensitive=True):
     """Creates a QR-Code from string data.
-    
+
     Args:
       data: string: The data to encode in a QR-code. If a unicode string is
-          supplied, it will be encoded in UTF-8.
+          supplied, it will be encoded in UTF-8. Raw bytes are also supported.
       version: int: The minimum version to use. If set to 0, the library picks
           the smallest version that the data fits in.
       level: int: Error correction level. Defaults to 'L'.
@@ -37,19 +37,25 @@ def encode(data, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
     if isinstance(data, unicode):
         data = data.encode('utf8')
     elif not isinstance(data, basestring):
-        raise ValueError('data argument must be a string.')
+        raise ValueError('data argument must be a string or bytes.')
+    if not data:
+        raise ValueError('data argument cannot be empty.')
     version = int(version)
     if level not in levels:
         raise ValueError('Invalid error-correction level.')
     if hint not in hints:
         raise ValueError('Invalid encoding mode.')
-    if case_sensitive:
-        version, size, data = _encode(data, version, level, hint, True)
-    else:
-        version, size, data = _encode(data, version, level, hint, False)
-    
+    try:
+        output = _qrencode.encode(data, version, level, hint, case_sensitive)
+    except (ValueError, TypeError):
+        output = _qrencode.encode_bytes(data, version, level)
+    if not output:
+        raise ValueError('Error generating QR-Code.')
+    version, size, data = output
+
     im = Image.frombytes('L', (size, size), data)
     return (version, size, im)
+
 
 def encode_scaled(data, size, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
                   case_sensitive=True):
@@ -57,7 +63,7 @@ def encode_scaled(data, size, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
 
     Args:
       data: string: The data to encode in a QR-code. If a unicode string is
-          supplied, it will be encoded in UTF-8.
+          supplied, it will be encoded in UTF-8. Raw bytes are also supported.
       size: int: Output size. If this is not an exact multiple of the QR-code's
           dimensions, padding will be added. If this is smaller than the
           QR-code's dimensions, it is ignored.
@@ -72,11 +78,11 @@ def encode_scaled(data, size, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
     """
     version, src_size, im = encode(data, version, level, hint, case_sensitive)
     if size < src_size:
-      size = src_size
+        size = src_size
     qr_size = (size / src_size) * src_size
     im = im.resize((qr_size, qr_size), Image.NEAREST)
     pad = (size - qr_size) / 2
     ret = Image.new("L", (size, size), 255)
     ret.paste(im, (pad, pad))
-    
+
     return (version, size, ret)
