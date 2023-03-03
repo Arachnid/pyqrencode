@@ -79,9 +79,9 @@ def encode_scaled(data, size, version=0, level=QR_ECLEVEL_L, hint=QR_MODE_8,
     version, src_size, im = encode(data, version, level, hint, case_sensitive)
     if size < src_size:
         size = src_size
-    qr_size = (size / src_size) * src_size
+    qr_size = (size // src_size) * src_size
     im = im.resize((qr_size, qr_size), Image.NEAREST)
-    pad = (size - qr_size) / 2
+    pad = (size - qr_size) // 2
     ret = Image.new("L", (size, size), 255)
     ret.paste(im, (pad, pad))
 
